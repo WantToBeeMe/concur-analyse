@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
-//using ConcQuiz; //this has no implementation yet, fill it in and then uncomment this :)
+using ConcQuiz; //this has no implementation yet, fill it in and then uncomment this :)
 
 namespace Quiz
 {
     // The values within WorkingParams can change during the experiments. 
     class SubmissionParams
     {
-        public const string studentNumberOne = ""; // This must be filled.
-        public const string studentNumberTwo = ""; // This must be filled. Keep it "" if you are working alone.
-        public const string classNumber = ""; // This must be filled. INF2A is just an example.
+        public const string studentNumberOne = "1031349"; // This must be filled.
+        public const string studentNumberTwo = "1041473"; // This must be filled. Keep it "" if you are working alone.
+        public const string classNumber = "INF2G"; // This must be filled. INF2A is just an example.
     }
 
     // The values of FixedParams must not change in the final submission.
@@ -19,12 +19,22 @@ namespace Quiz
         public const int minThinkingTimeTeacher = 50;
         public const int maxThinkingTimeTeacher = 200;
         public const int minThinkingTimeStudent = 20;
+        public const int maxThinkingTimeStudent = 50;
+        public const int maxNumOfQuestions = 20; 
+        public const int maxNumOfStudents = 20;
+        public const int maxNumOfTeachers = 4;
+        public const char delim = ',';
+    }
+    /*
+        public const int minThinkingTimeTeacher = 50;
+        public const int maxThinkingTimeTeacher = 200;
+        public const int minThinkingTimeStudent = 20;
         public const int maxThinkingTimeStudent = 100;
         public const int maxNumOfQuestions = 40; 
         public const int maxNumOfStudents = 200;
         public const int maxNumOfTeachers = 10;
         public const char delim = ',';
-    }
+        */
 
     class Program
     {
@@ -44,9 +54,9 @@ namespace Quiz
             TimeSpan seqET = seqSW.Elapsed;
 
             conSW.Start();
-            //QuizConcurrent cq = new QuizConcurrent();
-            //cq.RunExams();
-            //logConcContent = logConcContent + cq.FinalResult();
+            QuizConcurrent cq = new QuizConcurrent();
+            cq.RunExams();
+            logConcContent = logConcContent + cq.FinalResult();
             conSW.Stop();
 
             TimeSpan conET = conSW.Elapsed;
