@@ -378,8 +378,8 @@ namespace Quiz
 		{
 			classroom.SetUp();
 			classroom.PrepareExam(Quiz.FixedParams.maxNumOfQuestions);
-			//classroom.DistributeExam();
-			//classroom.StartExams();
+			classroom.DistributeExam();
+			classroom.StartExams();
         }
 		public string FinalResult()
 		{

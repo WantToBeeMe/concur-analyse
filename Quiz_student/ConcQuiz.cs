@@ -10,15 +10,22 @@ namespace ConcQuiz
     {
         public ConcAnswer(ConcStudent std, string txt = ""): base(std,txt){}
     }
+
     public class ConcQuestion : Question
     {
         //todo: add required fields, if necessary
+        Mutex mutex;
 
-        public ConcQuestion(string txt, string tcode) : base(txt, tcode){}
+        public ConcQuestion(string txt, string tcode) : base(txt, tcode){
+            mutex = new Mutex();
+        }
 
         public override void AddAnswer(Answer a)
         {
             //todo: implement the body 
+            lock(mutex){
+            this.Answers.AddLast(a);
+            }
         }
     }
 
@@ -31,11 +38,13 @@ namespace ConcQuiz
         public override void AssignExam(Exam e)
         {
             //todo: implement the body
+            base.AssignExam(e);
         }
 
         public override void StartExam()
         {
             //todo: implement the body
+            base.StartExam();
         }
 
         public override void Think()
@@ -47,6 +56,15 @@ namespace ConcQuiz
         public override void ProposeAnswer()
         {
             //todo: implement the body
+            if (this.Current is not null)
+            {
+                this.Log("\n[Proposing Answer]\n");
+				// add your answer
+                this.Current.Value.AddAnswer(new Answer(this));
+				// go for the next question
+				this.Current = this.Current.Next;
+                this.CurrentQuestionNumber++;
+            }
         }
 
         public override void Log(string logText = "")
@@ -59,7 +77,9 @@ namespace ConcQuiz
     {
         //todo: add required fields, if necessary
 
-        public ConcTeacher(string code, string name) : base(code,name){}
+        public ConcTeacher(string code, string name) : base(code,name){
+            
+        }
 
         public override void AssignExam(Exam e)
         {
@@ -100,10 +120,18 @@ namespace ConcQuiz
         {
             //todo: implement the body
             //niet final TBC
+
+            //lock(mutex) {
+            //    base.AddQuestion(teacher,text);
+            //}
+
+            ConcQuestion q = new ConcQuestion(text, teacher.Code);
             lock(mutex) {
-                base.AddQuestion(teacher, text);
+                //this.QuestionNumber++;
+				this.Questions.AddLast(q);
             }
-            System.Console.WriteLine("this is concurrent exam addquestion");
+            this.Log("[Question is added]"+q.ToString());
+            
         }
         public override void Log(string logText = "")
         {   
@@ -115,12 +143,11 @@ namespace ConcQuiz
     {
         //todo: add required fields, if necessary
         //niet final TBC 
-        public ConcExam ConcExam;
 
         public ConcClassroom(int examNumber = 1, string examName = "Programming") : base(examNumber, examName)
         {
             //todo: implement the body
-            this.ConcExam = new ConcExam(examNumber, examName); // only one exam
+            this.Exam = new ConcExam(examNumber, examName); 
         }
 
         public override void SetUp()
@@ -138,7 +165,7 @@ namespace ConcQuiz
 			}
 			// assign exams
 			foreach (ConcTeacher t in this.Teachers)
-				t.AssignExam(this.ConcExam);
+				t.AssignExam(this.Exam);
         }
 
         public override void PrepareExam(int maxNumOfQuestion)
@@ -159,10 +186,21 @@ namespace ConcQuiz
         public override void DistributeExam()
         {
             //todo: implement the body
+            foreach (ConcStudent s in this.Students)
+				s.AssignExam(this.Exam);
         }
         public override void StartExams()
         {
             //todo: implement the body
+            List<Thread> threads = new List<Thread>();
+            foreach (ConcStudent s in this.Students) {
+                Thread tr = new Thread (() => s.StartExam());
+                threads.Add(tr);
+                tr.Start();
+            }
+            foreach(Thread thr in threads) {
+                thr.Join();
+            }
         }
 
         public string GetStatistics()
@@ -191,8 +229,8 @@ namespace ConcQuiz
         {
             classroom.SetUp();
             classroom.PrepareExam(Quiz.FixedParams.maxNumOfQuestions);
-            //classroom.DistributeExam();
-            //classroom.StartExams();
+            classroom.DistributeExam();
+            classroom.StartExams();
         }
         public string FinalResult()
         {
