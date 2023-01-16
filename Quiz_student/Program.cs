@@ -20,8 +20,8 @@ namespace Quiz
         public const int maxThinkingTimeTeacher = 200;
         public const int minThinkingTimeStudent = 20;
         public const int maxThinkingTimeStudent = 50;
-        public const int maxNumOfQuestions = 20; 
-        public const int maxNumOfStudents = 20;
+        public const int maxNumOfQuestions = 10; 
+        public const int maxNumOfStudents = 6;
         public const int maxNumOfTeachers = 4;
         public const char delim = ',';
     }

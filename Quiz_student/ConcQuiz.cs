@@ -111,9 +111,13 @@ namespace ConcQuiz
         //todo: add required fields, if necessary
         //TBC niet final
         Mutex mutex;
+        int ConcNumber;
+        int ConcQuestionNumber;
 
         public ConcExam(int number, string name = "") : base(number,name){
             mutex = new Mutex();
+            ConcNumber = number;
+
         }
 
         public override void AddQuestion(Teacher teacher, string text)
@@ -127,12 +131,19 @@ namespace ConcQuiz
 
             ConcQuestion q = new ConcQuestion(text, teacher.Code);
             lock(mutex) {
-                //this.QuestionNumber++;
+                this.ConcQuestionNumber++;
 				this.Questions.AddLast(q);
             }
             this.Log("[Question is added]"+q.ToString());
             
         }
+
+        public override string ToString()
+        {
+            string delim = " : ", nl = "\n";
+            return "Exam "+delim+this.ConcNumber.ToString()+delim+" Total Num Questions: "+this.ConcQuestionNumber.ToString();
+        }
+
         public override void Log(string logText = "")
         {   
             base.Log();
