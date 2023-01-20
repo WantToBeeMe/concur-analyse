@@ -24,7 +24,7 @@ namespace ConcQuiz
         {
             //todo: implement the body 
             lock(mutex){
-            this.Answers.AddLast(a);
+                this.Answers.AddLast(a);
             }
         }
     }
@@ -56,15 +56,7 @@ namespace ConcQuiz
         public override void ProposeAnswer()
         {
             //todo: implement the body
-            if (this.Current is not null)
-            {
-                this.Log("\n[Proposing Answer]\n");
-				// add your answer
-                this.Current.Value.AddAnswer(new Answer(this));
-				// go for the next question
-				this.Current = this.Current.Next;
-                this.CurrentQuestionNumber++;
-            }
+            base.ProposeAnswer();
         }
 
         public override void Log(string logText = "")
@@ -109,7 +101,6 @@ namespace ConcQuiz
     public class ConcExam: Exam
     {
         //todo: add required fields, if necessary
-        //TBC niet final
         Mutex mutex;
         int ConcNumber;
         int ConcQuestionNumber;
@@ -122,20 +113,15 @@ namespace ConcQuiz
 
         public override void AddQuestion(Teacher teacher, string text)
         {
-            //todo: implement the body
-            //niet final TBC
-
-            //lock(mutex) {
-            //    base.AddQuestion(teacher,text);
-            //}
-
+            //making question
             ConcQuestion q = new ConcQuestion(text, teacher.Code);
+            
             lock(mutex) {
                 this.ConcQuestionNumber++;
-				this.Questions.AddLast(q);
+                this.Questions.AddLast(q);
             }
+
             this.Log("[Question is added]"+q.ToString());
-            
         }
 
         public override string ToString()
@@ -153,7 +139,6 @@ namespace ConcQuiz
     public class ConcClassroom : Classroom
     {
         //todo: add required fields, if necessary
-        //niet final TBC 
 
         public ConcClassroom(int examNumber = 1, string examName = "Programming") : base(examNumber, examName)
         {
@@ -166,12 +151,12 @@ namespace ConcQuiz
             //todo: implement the body
             for(int i = 0; i<FixedParams.maxNumOfStudents; i++)
 			{
-				string std_name = " STUDENT NAME"; //todo: to be generated later
+				string std_name = "STUDENT NAME"; //may be genrated later, or not
 				this.Students.AddLast(new ConcStudent(i + 1, std_name));
 			}
 			for(int i=0; i<FixedParams.maxNumOfTeachers; i++)
             {
-                string teacher_name = " TEACHER NAME"; //todo: to be generated later
+                string teacher_name = "TEACHER NAME"; //may be genrated later, or not
                 this.Teachers.AddLast(new ConcTeacher((i + 1).ToString(), teacher_name));
 			}
 			// assign exams
@@ -182,8 +167,6 @@ namespace ConcQuiz
         public override void PrepareExam(int maxNumOfQuestion)
         {
             //todo: implement the body
-            //zoiets idk
-            //TBC niet final
             List<Thread> threads = new List<Thread>();
             foreach (ConcTeacher t in this.Teachers) {
                 Thread tr = new Thread (() => t.PrepareExam(maxNumOfQuestion));
@@ -213,20 +196,8 @@ namespace ConcQuiz
                 thr.Join();
             }
         }
-
-        public string GetStatistics()
-        {
-            string result = "" , nl = "\n";
-            int totalNumOfAnswers = 0;
-            foreach (Question q in this.Exam.Questions)
-                totalNumOfAnswers += q.Answers.Count;
-            result = "#Students: " + this.Students.Count.ToString() + nl +
-                "#Teachers: " + this.Teachers.Count.ToString() + nl +
-                "#Questions: " + this.Exam.Questions.Count.ToString() + nl +
-                "#Answers: " + totalNumOfAnswers.ToString();
-            return result;
-        }
     }
+
     //THIS CLASS (QUIZCONCURRENT) SHOULD NOT BE CHANGED
     public class QuizConcurrent
     {
